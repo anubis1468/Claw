@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: claw-scraper-nvidia
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: NVIDIA_BASE_URL
+        value: https://integrate.api.nvidia.com/v1
+      - key: NVIDIA_MODEL
+        value: meta/llama-3.1-70b-instruct
+      - key: AI_PROVIDER
+        value: nvidia
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: claw-redis
+          property: connectionString
+      - key: PROXY_LIST
+        sync: false
+      - key: PORT
+        value: 10000
+      - key: RATE_LIMIT_DELAY
+        value: "1.0"
+      - key: MAX_CONCURRENT_SCRAPES
+        value: "5"
+      - key: CORS_ORIGINS
+        value: "*"
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+  - type: redis
+    name: claw-redis
+    plan: free
+    ipAllowList: []
